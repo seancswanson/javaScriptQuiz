@@ -1,156 +1,130 @@
 var score = 0;
+var correctAnswerIndex = 0;
+var questionIndex = 0;
+var selections = []
+var quizDiv = $("#quiz");
+var next = $("#next");
 
-const quizDiv = $(".quiz");
-const resultsDiv = $("#results");
-const next = $("#next");
-
+var radioButtons = $("input");
 
 var allQuestions = [{
         question: "What race is Frodo?",
-        choices: {
-            a: "Orc",
-            b: "Hobbit",
-            c: "Man",
-            d: "Elf"
-        },
-        correctAnswerIndex: "b"
+        choices: ["Orc", "Hobbit", "Man", "Elf"],
+        correctAnswerIndex: 1
     },
     {
         question: "Who is the oldest creature in Middle Earth?",
-        choices: {
-            a: "Treebeard",
-            b: "Gandalf",
-            c: "Elrond",
-            d: "Aragorn"
-        },
-        correctAnswer: "a"
+        choices: ["Treebeard", "Gandalf", "Elrond", "Aragorn"],
+        correctAnswerIndex: 0
     },
     {
         question: "What is the name of the Dark Lord's Tower?",
-        choices: {
-            a: "Amon Amarth",
-            b: "Dimmu Borgir",
-            c: "Isengard",
-            d: "Barad-dur"
-        },
-        correctAnswer: "d"
+        choices: ["Amon Amarth", "Dimmu Borgir", "Isengard", "Barad-dur"],
+        correctAnswerIndex: 3
     },
     {
         question: "How old did Bilbo turning during the celebration in \"The Fellowship Of The Ring?\"",
-        choices: {
-            a: "Ninety-third",
-            b: "Twenty-fifty-second",
-            c: "Eleventy-first",
-            d: "Seventy-seventh"
-        },
-        correctAnswer: "c"
+        choices: ["Ninety-third", "Twenty-fifty-second", "Eleventy-first", "Seventy-seventh"],
+        correctAnswerIndex: 2
     },
     {
         question: "What was the name of J.R.R. Tolkien's literary discussion group at Oxford which included C.S. Lewis?",
-        choices: {
-            a: "Inklings",
-            b: "Inksters",
-            c: "Inkmen",
-            d: "Oxford Commas"
-        },
-        correctAnswer: "a"
-    }
+        choices: ["Inklings", "Inksters", "Inkmen", "Oxford Commas"],
+        correctAnswerIndex: 0
+    },
 ];
 
-function generateQandA() {
-    //store output to be generated
-    const output = [];
+function showQuestion() {
+    // console.log(questionIndex);
+    // console.log(allQuestions[questionIndex]["question"]);
+    $(".questionField").hide().fadeIn(1000);
+    if (questionIndex <= 4) {
+        $("#questionText").hide().fadeIn(1000).text(allQuestions[questionIndex]["question"]);
+        $("#next").text("Next question");
+        // console.log(questionIndex);
+    }
+}
 
-    allQuestions.forEach(
-        (currentQuestion, questionNumber) => {
-            //store list of answer chouces
-            const choices = [];
+function showChoices() {
+    // console.log(allQuestions[questionIndex]["choices"]);
+    if (questionIndex <= 4) {
+        $("#questionForm").hide().fadeIn(1200);
+        $("#q0choice").text(allQuestions[questionIndex]["choices"][0]);
+        $("#q1choice").text(allQuestions[questionIndex]["choices"][1]);
+        $("#q2choice").text(allQuestions[questionIndex]["choices"][2]);
+        $("#q3choice").text(allQuestions[questionIndex]["choices"][3]);
+    }
+}
 
-            // for each answer within each question index
-            for (letter in currentQuestion.choices) {
+function checkQuestion() {
+	// console.log("checkquestion runs");
+    if (questionIndex === 0) {
+        $("#q1button").attr("value", "answer");
+        console.log("sets hobbit to answer");
+        $("#q0button,#q2button,#q3button").attr("value","");
+    } 
+    if (questionIndex === 1) {
+        $("#q0button").attr("value", "answer");
+        console.log("sets treebeard to answer");
+        $("#q1button,#q2button,#q3button").attr("value","");
+    }
+    if (questionIndex === 2) {
+        $("#q3button").attr("value", "answer");
+        $("#q0button,#q1button,#q2button").attr("value","");
+    }
+    if (questionIndex === 3) {
+        $("#q2button").attr("value", "answer");
+        $("#q0button,#q1button,#q3button").attr("value","");
+    } 
+    if(questionIndex===4){
+    	$("#q0button").attr("value", "answer");
+        $("#q1button,#q2button,#q3button").attr("value","");
+    }
+      $("input").on("click",function(){
+      	if($(this).attr("value")==="answer"){
+    		console.log("answer was clicked");
+    		score++;
+      	} else {
+      		console.log("wrong answer clicked");
+      	}
+})
+};
 
-                //create a radio button
-                 choices.push(
-    `<label>
-      <input type="radio" name="question${questionNumber}" value="${letter}">
-      ${letter} :
-      ${currentQuestion.choices[letter]}
-    </label>`
-  );
-            }
 
-            //add the question and the choices to the output in html
-            output.push(
-                `<div class="question"> ${currentQuestion.question} </div>
-  				<div class="answers"> ${choices.join('')} </div>`
-            );
+
+$("#next").on("click", function() {
+    if (questionIndex <= 4) {
+        console.log("score is " + score);
+        questionIndex++;
+        checkQuestion();
+        showQuestion();
+        showChoices();
+        triggerNext();
+    }
+})
+
+
+function triggerNext() {
+    if (questionIndex === 4) {
+        $("#next").html("Tally score");
+        $("#next").on("click", showScore);
         }
-    );
+    }
 
-    quizDiv.innterHTML = output.join('');
+function showScore(){
+	Math.floor(score);
+	if (score ===15){
+		$(".quiz").html("<h1> You answered all " + score/3 +" correctly! Nerd.");
+	} else if (score === 10) {
+		$(".quiz").html("<h1> You answered " + (score-6) +" correctly! Decent.");
+	} else if (score === 6) {
+		$(".quiz").html("<h1> You answered " + (score-3) +" correctly! Meh ok.");
+	} else if (score === 3) {
+		$(".quiz").html("<h1> You answered " + (score-1) +" correctly! Meh ok.");
+	} else {
+		$(".quiz").html("<h1> You answered " + (score) +" correctly! GET GOOD NOOB.");
+	}
 }
-
-function generateScore() {
-
-}
-
-next.on("click", generateScore);
-
-generateQandA();
-
-
-// var q0 = allQuestions[questionIndex]["question"]["choices"][0];
-// var q1 = allQuestions[questionIndex]["question"]["choices"][0];
-// var q2 = allQuestions[questionIndex]["question"]["choices"][0];
-// var q3 = allQuestions[questionIndex]["question"]["choices"][0];
-
-// function showQuestion() {
-//     // console.log(questionIndex);
-//     // console.log(allQuestions[questionIndex]["question"]);
-//     $(".questionField").hide().fadeIn(1000);
-//     if (questionIndex <= 4) {
-//         $("#questionText").hide().fadeIn(1000).text(allQuestions[questionIndex]["question"]);
-//         $("#next").text("Next question");
-//         console.log(questionIndex);
-//     }
-// }
-
-// function showChoices() {
-//     // console.log(allQuestions[questionIndex]["choices"]);
-//     if (questionIndex <= 4) {
-//     	$("#questionForm").hide().fadeIn(1200);
-//         $("#q0choice").text(allQuestions[questionIndex]["choices"][0]);
-//         $("#q1choice").text(allQuestions[questionIndex]["choices"][1]);
-//         $("#q2choice").text(allQuestions[questionIndex]["choices"][2]);
-//         $("#q3choice").text(allQuestions[questionIndex]["choices"][3]);
-//     }
-// }
-// // function checkQuestion()
-
-// $("#next").on("click", function() {
-//     if (questionIndex <= 4) {
-//     	console.log("score is "+ score);
-//         questionIndex++;
-//         showQuestion();
-//         showChoices();
-//         triggerNext();
-//     }
-// })
-
-// $("input").on("click", function(){
-// 	console.log("logged");
-// 		if(questionIndex===0){
-
-// 		}
-// });
-
-// function triggerNext() {
-// 	if(questionIndex === 4) {
-// 		$("#next").html("Tally score");
-
-// 	}
-// }
-// $(":radio[name='portion_num'][value='1']").attr('checked', 'checked');
-// showQuestion();
-// showChoices();
-// // showQuestion
+showQuestion();
+showChoices();
+checkQuestion();
