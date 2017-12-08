@@ -26,10 +26,11 @@ var allQuestions = [
 		choices: ["Inklings", "Inksters", "Inkmen", "Oxford Commas"],
 		correctAnswerIndex: 0
 	},
+
 ]
 
 var q0 = allQuestions[0]["question"];
 var q1 = allQuestions[1]["question"];
 var q2 = allQuestions[2]["question"];
 var q3 = allQuestions[3]["question"];
-var q4 = allQuestions[4]["question"];
+
